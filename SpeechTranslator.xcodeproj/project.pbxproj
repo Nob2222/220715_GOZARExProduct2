@@ -17,6 +17,8 @@
 		0A78DAA7234E293100775D47 /* SpeechTranslatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A78DAA6234E293100775D47 /* SpeechTranslatorTests.swift */; };
 		0A78DAB2234E293100775D47 /* SpeechTranslatorUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A78DAB1234E293100775D47 /* SpeechTranslatorUITests.swift */; };
 		0A78DAC0234E2AE400775D47 /* ClosedCaptioning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A78DABF234E2AE400775D47 /* ClosedCaptioning.swift */; };
+		256048DE28928E4100D8ABC7 /* Bluetooth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 256048DD28928E4100D8ABC7 /* Bluetooth.swift */; };
+		256048E028928E7700D8ABC7 /* ReplyStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 256048DF28928E7700D8ABC7 /* ReplyStream.swift */; };
 		327B6C1278943B09AB941F95 /* Pods_SpeechTranslator_SpeechTranslatorUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F15B086ABBE1F537BE7D33E5 /* Pods_SpeechTranslator_SpeechTranslatorUITests.framework */; };
 		78C18317A80C88DAE9F5B81E /* Pods_SpeechTranslator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C77028BED6B29A6FA5D1759E /* Pods_SpeechTranslator.framework */; };
 		B1A3A3D08A80A86A74F32E7D /* Pods_SpeechTranslatorTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0271FE93014F7CBF50EFBCF5 /* Pods_SpeechTranslatorTests.framework */; };
@@ -58,6 +60,8 @@
 		0A78DAB1234E293100775D47 /* SpeechTranslatorUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechTranslatorUITests.swift; sourceTree = "<group>"; };
 		0A78DAB3234E293100775D47 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0A78DABF234E2AE400775D47 /* ClosedCaptioning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClosedCaptioning.swift; sourceTree = "<group>"; };
+		256048DD28928E4100D8ABC7 /* Bluetooth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bluetooth.swift; sourceTree = "<group>"; };
+		256048DF28928E7700D8ABC7 /* ReplyStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyStream.swift; sourceTree = "<group>"; };
 		3F16CEDF79F7D6EB0120F922 /* Pods-SpeechTranslator-SpeechTranslatorUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SpeechTranslator-SpeechTranslatorUITests.release.xcconfig"; path = "Target Support Files/Pods-SpeechTranslator-SpeechTranslatorUITests/Pods-SpeechTranslator-SpeechTranslatorUITests.release.xcconfig"; sourceTree = "<group>"; };
 		92289BC1942069136E3DF374 /* Pods-SpeechTranslator-SpeechTranslatorUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SpeechTranslator-SpeechTranslatorUITests.debug.xcconfig"; path = "Target Support Files/Pods-SpeechTranslator-SpeechTranslatorUITests/Pods-SpeechTranslator-SpeechTranslatorUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		C77028BED6B29A6FA5D1759E /* Pods_SpeechTranslator.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SpeechTranslator.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -129,6 +133,8 @@
 				0A78DA9D234E293100775D47 /* Info.plist */,
 				0A29C2A8234E6D25003D0163 /* GoogleService-Info.plist */,
 				0A78DA97234E293100775D47 /* Preview Content */,
+				256048DD28928E4100D8ABC7 /* Bluetooth.swift */,
+				256048DF28928E7700D8ABC7 /* ReplyStream.swift */,
 			);
 			path = SpeechTranslator;
 			sourceTree = "<group>";
@@ -459,6 +465,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A78DA90234E292C00775D47 /* AppDelegate.swift in Sources */,
+				256048DE28928E4100D8ABC7 /* Bluetooth.swift in Sources */,
+				256048E028928E7700D8ABC7 /* ReplyStream.swift in Sources */,
 				0A78DA92234E292C00775D47 /* SceneDelegate.swift in Sources */,
 				0A78DA94234E292C00775D47 /* ContentView.swift in Sources */,
 				0A78DAC0234E2AE400775D47 /* ClosedCaptioning.swift in Sources */,
