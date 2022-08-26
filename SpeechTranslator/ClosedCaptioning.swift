@@ -9,18 +9,59 @@
 import Foundation
 import Speech
 import Firebase
+import SwiftUI
+
+/*
+struct TxtData{
+    public var captioning: String = "なにか話しかけてください"
+    public var translation: String = "-"
+    
+    mutating func captioningChange(str: String){
+        captioning = str
+        print("TxtData-Struct:captioning書き換え：" + captioning)
+    }
+    
+    mutating func translationChange(str: String){
+        translation = str
+        print("TxtData-Struct:translation書き換え：" + translation)
+    }
+    
+} // 参照：https://chusotsu-program.com/swift-struct-mutating/
+ */
+
+/*
+class ClosedCapTxt: ObservableObject {
+    @Published var captioning: String = "なにか話しかけてください"
+    @Published var translation: String = "-"
+    
+    func captioningChange(str: String){
+        captioning = str
+        print("TxtData-Struct:captioning書き換え：" + captioning)
+    }
+    
+    func translationChange(str: String){
+        translation = str
+        print("TxtData-Struct:translation書き換え：" + translation)
+    }
+    
+}
+ */
+
 
 class ClosedCaptioning: ObservableObject {
+        
     private let speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "ja_JP"))!
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
     private var recognitionTask: SFSpeechRecognitionTask?
     private let audioEngine = AVAudioEngine()
     
+    //@State var txtData: TxtData = TxtData()
+    
     @Published var captioning: String = "なにか話しかけてください"
     @Published var translation: String = "-"
     @Published var isPlaying: Bool = false
     @Published var micEnabled: Bool = false
-    
+        
     private let translator: Translator
     
     init (){
@@ -50,10 +91,12 @@ class ClosedCaptioning: ObservableObject {
         guard let recognitionRequest = recognitionRequest else { fatalError("Unable to create a SFSpeechAudioBufferRecognitionRequest object") }
         recognitionRequest.shouldReportPartialResults = true
         
+        /*
         // 音声認識データを端末に残す
         if #available(iOS 13, *) {
             recognitionRequest.requiresOnDeviceRecognition = false
         }
+         */
         
         // 音声認識セッションの認識タスクを作成します。
         // タスクをキャンセルできるように、リファレンスを保持しておく。
@@ -63,15 +106,37 @@ class ClosedCaptioning: ObservableObject {
             if let result = result {
                 // テキストビューを結果で更新します。
                 self.captioning = result.bestTranscription.formattedString
+                print("ClosedCap-Class:Captioning: \(self.captioning)")
+                
+                //self.txtData.captioning = result.bestTranscription.formattedString
+                //self.txtData.captioningChange(str: result.bestTranscription.formattedString)
+                //ClosedCapTxt().captioning = result.bestTranscription.formattedString
+                //ClosedCapTxt().captioningChange(str: result.bestTranscription.formattedString)
+                
+                //print("Captioning: \(self.txtData.captioning)")
+                //print("ClosedCap-Class:Captioning: \(TxtData().captioning)")
+                //print("ClosedCap-Class:Captioning: \(ClosedCapTxt().captioning)")
+                
                 self.translator.translate(result.bestTranscription.formattedString) { (translatedText, error) in
                     guard error == nil,
                         let translatedText = translatedText
                         else { return }
+                    
                     self.translation = translatedText
+                    print("ClosedCap-Class:translation: \(self.translation)")
+                    
+                    //self.txtData.translation = translatedText
+                    //self.txtData.translationChange(str: translatedText)
+                    //print("ClosedCap-Class:translation: \(self.txtData.translation)")
+                    //ClosedCapTxt().translation = translatedText
+                    //ClosedCapTxt().translationChange(str: translatedText)
+                    //print("ClosedCap-Class:translation: \(ClosedCapTxt().translation)")
+                    
                 }
                 self.translate(text: result.bestTranscription.formattedString)
                 isFinal = result.isFinal
-                print("Text \(result.bestTranscription.formattedString)")
+                print("ClosedCap-Class:Text \(result.bestTranscription.formattedString)")
+                
             }
             
             if error != nil || isFinal {
@@ -95,6 +160,32 @@ class ClosedCaptioning: ObservableObject {
         audioEngine.prepare()
         try audioEngine.start()
     }
+
+
+    func stopRecording(){
+        self.recognitionTask?.cancel()
+        self.recognitionTask?.finish()
+        self.recognitionRequest?.endAudio()
+        self.recognitionRequest = nil
+        self.recognitionTask = nil
+        self.audioEngine.stop()
+        self.isPlaying = false
+        audioEngine.inputNode.removeTap(onBus: 0)
+        
+        //self.txtData.captioning = ""
+        //self.txtData.translation = ""
+        //self.translator?.cancel()
+        
+        let audioSession = AVAudioSession.sharedInstance()
+        do {
+            try audioSession.setCategory(AVAudioSession.Category.playback)
+            try audioSession.setMode(AVAudioSession.Mode.default)
+        } catch{
+            print("AVAudioSession error")
+        }
+        //self.audioRunning = false
+    } //引用元 https://www.servernote.net/article.cgi?id=swiftui-voice-to-text
+    
     
     // マイクボタンがタップされたとき
     func micButtonTapped(){
@@ -112,12 +203,43 @@ class ClosedCaptioning: ObservableObject {
         }
     }
     
+    /*
+    // 絶対起動させる
+    func AudioStart(){
+        if audioEngine.isRunning {
+            print("ここ走る？")
+            //処理しない
+        } else {
+            do {
+                try startRecording()
+                isPlaying = true
+            } catch {
+                isPlaying = false
+            }
+        }
+    }
+     */
+    
+    
     func translate(text: String){
         self.translator.translate(text) { (translatedText, error) in
             guard error == nil, let translatedText = translatedText else { return }
             self.translation = translatedText
+            
+            //self.txtData.translation = translatedText
+            //self.txtData.translationChange(str: translatedText)
+            //ClosedCapTxt().translation = translatedText
         }
     }
+    
+    /*
+    //テキストのみクリアできないかトライ ぶっちゃけむずそう。
+    func txtClear(){
+        print("Old:" + self.translation)
+        self.captioning = ""
+        self.translation = ""
+    }
+     */
     
     func getPermission(){
         // 非同期で認可要求を行う。
@@ -139,3 +261,6 @@ class ClosedCaptioning: ObservableObject {
         }
     }
 }
+
+
+
