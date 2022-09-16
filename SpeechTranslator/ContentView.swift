@@ -15,16 +15,10 @@ import Combine //Timer用
 
 struct ContentView: View {
     @State var selectedTag:Int = 1
-    //@State var selectedTag:Int
-    
-    //@EnvironmentObject var selectedTag: TabNo
-    
     var body: some View {
         TabView(selection: $selectedTag) {
-        //TabView(selection: $selectedTag.selectedTabNumber) {
             //BLE側の画面
             BLEView(selectedTag: $selectedTag)
-            //BLEView()
                 .tabItem {
                     Image(systemName: "app.connected.to.app.below.fill")
                     Text("BLEView")
@@ -32,14 +26,11 @@ struct ContentView: View {
             
             //感情分析側の画面
             SentiAnalyView(selectedTag: $selectedTag)
-            //SentiAnalyView()
                 .tabItem {
                     Image(systemName: "person.wave.2.fill")
                     Text("Analytics")
                 }.tag(2)
         }
-        //Timer用
-        .environmentObject(TimerModel())
     }
 }
 
@@ -117,18 +108,12 @@ struct BLEView: View {
 //感情分析画面
 struct SentiAnalyView: View {
     
-    //@ObservedObject var closedCap = ClosedCaptioning()
     @EnvironmentObject var closedCap : ClosedCaptioning
     
     //感情認識用
     @State private var text: String = ""
     @Binding var selectedTag: Int
-    
-    //Timer用
-    @EnvironmentObject var timerContorller: TimerModel
-    
-    //@State var txtData: TxtData = TxtData()
-    
+        
     //translationされた文字を使って感情分析を実行しsentimentに代入する
     var sentiment: String {
         return performSentimentAnalysis(for: self.closedCap.translation)
@@ -197,18 +182,20 @@ struct SentiAnalyView: View {
             .onAppear {
                 self.closedCap.getPermission()
             }
-            //間違いなく値は変わっているのに、OnChangeが検出されない。
-            //最初は検出されているが、タイマーによる録音再起動以降、このビューでは値の変更が検出出来なくなっている。
-            .onChange(of: self.closedCap.translation){ newValue in
-            //.onChange(of: self.txtData.translation){ newValue in
-            //.onChange(of: self.closedCaptxt.translation){ newValue in
-                //print(timerContorller.count)
-                if(timerContorller.timer == nil){
-                    timerContorller.start(0.1)
+            //翻訳後のテキストが変更された場合、タイマーが無ければ起動、あれば再起動
+            //.onChange(of: self.closedCap.translation){ newValue in
+            .onChange(of: self.sentiment){ newValue in
+                /*
+                　話し続けている間は再起動が掛かり続けるので、カウントは大きくならないが、
+                　話が終わると再起動が掛からないためカウントが大きくなり会話の終了を検知できる
+                　(ClosedCaptioning.StartTimerのプログラムを参照)
+                */
+                if(self.closedCap.timer == nil){
+                    self.closedCap.TimerStart(0.1, Sentiment:"0")
                 }else{
-                    timerContorller.count = 0
-                    timerContorller.stop()
-                    timerContorller.start(0.1)
+                    self.closedCap.count = 0
+                    self.closedCap.TimerStop()
+                    self.closedCap.TimerStart(0.1, Sentiment:self.sentiment)
                 }
             }
         } else {
@@ -226,68 +213,6 @@ struct SentiAnalyView: View {
     }
 }
 
-
-class TimerModel: ObservableObject{
-    @Published var count: Int = 0
-    @Published var timer: AnyCancellable!
-    
-    //@EnvironmentObject var closedCap : ClosedCaptioning
-    @ObservedObject var closedCap = ClosedCaptioning()
-    @ObservedObject private var bluetooth = Bluetooth()
-            
-    // タイマーの開始
-    func start(_ interval: Double = 1.0){
-        //print("start Timer")
-
-        // TimerPublisherが存在しているときは念の為処理をキャンセル
-        if let _timer = timer{
-            _timer.cancel()
-        }
-
-        // every -> 繰り返し頻度 / on -> タイマー処理が走るLoopを指定
-        // in: -> 入力処理モードの設定 .defalut:操作系の入力と同様に処理をするらしい : .common それ以外
-        // .defalutを指定していると処理が遅くなることがある
-        timer = Timer.publish(every: interval, on: .main, in: .common)
-            // 繰り返し処理の実行
-            .autoconnect()
-            //　 レシーバーが動くスレッドを指定しているのだと思われる
-            //  .main -> メインスレッド(UI)　, .global() -> 別スレッド
-            .receive(on: DispatchQueue.main)
-            .sink(receiveValue: ({_ in
-                // 設定した時間ごとに呼ばれる
-                self.count += 1
-                
-                if(self.count == 15){
-                    print("1.5びょうたったよ")
-                    self.stop()
-                    
-                    //録音停止
-                    self.closedCap.stopRecording()
-                    //self.closedCap.micButtonTapped()
-                    print("録音停止します")
-                    
-                    //BlEの値を送信 今は100で固定
-                    self.bluetooth.writeString(text: "100")
-                    
-                    
-                    //録音再開 -> したいが出来ない
-                    self.closedCap.micButtonTapped()
-                    print("録音開始します！")
-                    
-                    
-                }
-                
-        }))
-    }
-
-    // タイマーの停止
-    func stop(){
-        //print("stop Timer")
-        timer?.cancel()
-        timer = nil
-    }
-
-}
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         Group {

@@ -320,9 +320,9 @@ final class Bluetooth: NSObject, ObservableObject, CBCentralManagerDelegate, CBP
          write(data:dstr.data( using:String.Encoding.utf8,allowLossyConversion:true )!)
         */
         
-        let Hidata = text.data(using: String.Encoding.utf8, allowLossyConversion:true)
-        PERIPHERAL?.writeValue( Hidata! ,for:CHARACTERISTICS!,type:CBCharacteristicWriteType.withResponse )
-        print(Hidata!)
+        let Senddata = text.data(using: String.Encoding.utf8, allowLossyConversion:true)
+        PERIPHERAL?.writeValue( Senddata! ,for:CHARACTERISTICS!,type:CBCharacteristicWriteType.withResponse )
+        print(Senddata!)
         
         
     }

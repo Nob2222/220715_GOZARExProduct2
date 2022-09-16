@@ -11,42 +11,7 @@ import Speech
 import Firebase
 import SwiftUI
 
-/*
-struct TxtData{
-    public var captioning: String = "なにか話しかけてください"
-    public var translation: String = "-"
-    
-    mutating func captioningChange(str: String){
-        captioning = str
-        print("TxtData-Struct:captioning書き換え：" + captioning)
-    }
-    
-    mutating func translationChange(str: String){
-        translation = str
-        print("TxtData-Struct:translation書き換え：" + translation)
-    }
-    
-} // 参照：https://chusotsu-program.com/swift-struct-mutating/
- */
-
-/*
-class ClosedCapTxt: ObservableObject {
-    @Published var captioning: String = "なにか話しかけてください"
-    @Published var translation: String = "-"
-    
-    func captioningChange(str: String){
-        captioning = str
-        print("TxtData-Struct:captioning書き換え：" + captioning)
-    }
-    
-    func translationChange(str: String){
-        translation = str
-        print("TxtData-Struct:translation書き換え：" + translation)
-    }
-    
-}
- */
-
+import Combine //Timer用
 
 class ClosedCaptioning: ObservableObject {
         
@@ -54,13 +19,15 @@ class ClosedCaptioning: ObservableObject {
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
     private var recognitionTask: SFSpeechRecognitionTask?
     private let audioEngine = AVAudioEngine()
-    
-    //@State var txtData: TxtData = TxtData()
-    
+        
     @Published var captioning: String = "なにか話しかけてください"
     @Published var translation: String = "-"
     @Published var isPlaying: Bool = false
     @Published var micEnabled: Bool = false
+    
+    //Timer用
+    @Published var count: Int = 0
+    @Published var timer: AnyCancellable!
         
     private let translator: Translator
     
@@ -108,15 +75,6 @@ class ClosedCaptioning: ObservableObject {
                 self.captioning = result.bestTranscription.formattedString
                 print("ClosedCap-Class:Captioning: \(self.captioning)")
                 
-                //self.txtData.captioning = result.bestTranscription.formattedString
-                //self.txtData.captioningChange(str: result.bestTranscription.formattedString)
-                //ClosedCapTxt().captioning = result.bestTranscription.formattedString
-                //ClosedCapTxt().captioningChange(str: result.bestTranscription.formattedString)
-                
-                //print("Captioning: \(self.txtData.captioning)")
-                //print("ClosedCap-Class:Captioning: \(TxtData().captioning)")
-                //print("ClosedCap-Class:Captioning: \(ClosedCapTxt().captioning)")
-                
                 self.translator.translate(result.bestTranscription.formattedString) { (translatedText, error) in
                     guard error == nil,
                         let translatedText = translatedText
@@ -124,13 +82,6 @@ class ClosedCaptioning: ObservableObject {
                     
                     self.translation = translatedText
                     print("ClosedCap-Class:translation: \(self.translation)")
-                    
-                    //self.txtData.translation = translatedText
-                    //self.txtData.translationChange(str: translatedText)
-                    //print("ClosedCap-Class:translation: \(self.txtData.translation)")
-                    //ClosedCapTxt().translation = translatedText
-                    //ClosedCapTxt().translationChange(str: translatedText)
-                    //print("ClosedCap-Class:translation: \(ClosedCapTxt().translation)")
                     
                 }
                 self.translate(text: result.bestTranscription.formattedString)
@@ -187,7 +138,7 @@ class ClosedCaptioning: ObservableObject {
     } //引用元 https://www.servernote.net/article.cgi?id=swiftui-voice-to-text
     
     
-    // マイクボタンがタップされたとき
+    // マイクボタンがタップされたとき (これで録音ON,OFFを制御)
     func micButtonTapped(){
         if audioEngine.isRunning {
             recognitionRequest?.endAudio()
@@ -203,24 +154,57 @@ class ClosedCaptioning: ObservableObject {
         }
     }
     
-    /*
-    // 絶対起動させる
-    func AudioStart(){
-        if audioEngine.isRunning {
-            print("ここ走る？")
-            //処理しない
-        } else {
-            do {
-                try startRecording()
-                isPlaying = true
-            } catch {
-                isPlaying = false
-            }
+    // 会話終わりを検出して再起動掛けるためのタイマー
+    func TimerStart(_ interval: Double = 1.0, Sentiment: String){
+        // TimerPublisherが存在しているときは念の為処理をキャンセル
+        if let _timer = timer{
+            _timer.cancel()
         }
+        
+        timer = Timer.publish(every: interval, on: .main, in: .common)
+            // 繰り返し処理の実行
+            .autoconnect()
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: ({_ in
+                
+                self.count += 1
+                
+                //録音が終了していたら録音を開始する
+                if(self.isPlaying == false){
+                    self.micButtonTapped() //録音開始
+                }
+                //1.5秒経ったとき
+                if(self.count == 15){
+                    print("録音停止")
+                    self.micButtonTapped() //録音停止
+                    /*　ここで録音停止、録音開始が出来なかった理由
+                    　　　録音停止を実行時、即時停止される訳ではなく、このTimerの処理が終わってから？停止する仕様になっている。
+                    　　　なので、1.5秒経った後は録音停止だけを実施し、録音開始の部分は別で作ることで対応。
+                    　　　(このifの前に、0.1秒毎にタイマーを監視し、録音停止していたら録音開始する分岐を追加) */
+                    
+                    //-1.0等は送りづらいので、-1.0<->+1.0 を 0<->200 に変更
+                    var SendNumber = Double(Sentiment)!
+                    SendNumber = SendNumber * 100 + 100
+                    
+                    //BluetoothクラスのwriteStringでテキストを送信
+                    let BLESend = Bluetooth()
+                    BLESend.writeString(text: String(SendNumber))
+                    
+                    print(String(SendNumber) + ":をBLEで送信しました")
+                    
+                }
+                
+        }))
     }
-     */
+
+    // タイマーの停止
+    func TimerStop(){
+        //print("stop Timer")
+        timer?.cancel()
+        timer = nil
+    }
     
-    
+    // 翻訳
     func translate(text: String){
         self.translator.translate(text) { (translatedText, error) in
             guard error == nil, let translatedText = translatedText else { return }
@@ -231,16 +215,7 @@ class ClosedCaptioning: ObservableObject {
             //ClosedCapTxt().translation = translatedText
         }
     }
-    
-    /*
-    //テキストのみクリアできないかトライ ぶっちゃけむずそう。
-    func txtClear(){
-        print("Old:" + self.translation)
-        self.captioning = ""
-        self.translation = ""
-    }
-     */
-    
+        
     func getPermission(){
         // 非同期で認可要求を行う。
         SFSpeechRecognizer.requestAuthorization { authStatus in
