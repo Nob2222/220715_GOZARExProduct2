@@ -69,7 +69,7 @@ final class Bluetooth: NSObject, ObservableObject, CBCentralManagerDelegate, CBP
             self.stateText = "Bluetoothが使用できません"
         break
         case .POWERED_ON:
-            self.buttonText = "検索する"
+            self.buttonText = "ラッコまるを検索"
             self.stateText = "機器を検索してください"
         break
         case .SCANNING:
@@ -81,7 +81,7 @@ final class Bluetooth: NSObject, ObservableObject, CBCentralManagerDelegate, CBP
             self.stateText = "RaspberryPiが見つかりませんでした"
         break
         case .DISCOVER_PERIPHERAL:
-            self.buttonText = "接続する"
+            self.buttonText = "ラッコまるに接続"
         break
         case .CONNECTING:
             self.buttonText = "接続キャンセル"
