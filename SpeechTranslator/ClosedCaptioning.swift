@@ -9,6 +9,7 @@
 import Foundation
 import Speech
 import Firebase
+import SwiftUI
 
 class ClosedCaptioning: ObservableObject {
     private let speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "ja_JP"))!

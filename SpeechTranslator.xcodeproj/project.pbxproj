@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		08A8C5302885848100E1D93F /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A8C52F2885848100E1D93F /* MainView.swift */; };
 		0A29C2A9234E6D25003D0163 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0A29C2A8234E6D25003D0163 /* GoogleService-Info.plist */; };
 		0A78DA90234E292C00775D47 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A78DA8F234E292C00775D47 /* AppDelegate.swift */; };
 		0A78DA92234E292C00775D47 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A78DA91234E292C00775D47 /* SceneDelegate.swift */; };
@@ -42,6 +43,7 @@
 /* Begin PBXFileReference section */
 		012F12D6D60E642EEB8894A4 /* Pods-SpeechTranslator.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SpeechTranslator.release.xcconfig"; path = "Target Support Files/Pods-SpeechTranslator/Pods-SpeechTranslator.release.xcconfig"; sourceTree = "<group>"; };
 		0271FE93014F7CBF50EFBCF5 /* Pods_SpeechTranslatorTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SpeechTranslatorTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		08A8C52F2885848100E1D93F /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		0A29C2A8234E6D25003D0163 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		0A78DA8C234E292C00775D47 /* SpeechTranslator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpeechTranslator.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A78DA8F234E292C00775D47 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -129,6 +131,7 @@
 				0A78DA9D234E293100775D47 /* Info.plist */,
 				0A29C2A8234E6D25003D0163 /* GoogleService-Info.plist */,
 				0A78DA97234E293100775D47 /* Preview Content */,
+				08A8C52F2885848100E1D93F /* MainView.swift */,
 			);
 			path = SpeechTranslator;
 			sourceTree = "<group>";
@@ -461,6 +464,7 @@
 				0A78DA90234E292C00775D47 /* AppDelegate.swift in Sources */,
 				0A78DA92234E292C00775D47 /* SceneDelegate.swift in Sources */,
 				0A78DA94234E292C00775D47 /* ContentView.swift in Sources */,
+				08A8C5302885848100E1D93F /* MainView.swift in Sources */,
 				0A78DAC0234E2AE400775D47 /* ClosedCaptioning.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
